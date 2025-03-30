@@ -9,8 +9,7 @@
         android:id="@+id/barcode_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:zxing_use_texture_view="true"
-        app:zxing_focus_timeout="5000"/>
+        app:zxing_use_texture_view="true"/>
 
     <FrameLayout
         android:layout_width="300dp"
