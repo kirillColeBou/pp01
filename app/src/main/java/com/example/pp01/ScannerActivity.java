@@ -3,6 +3,7 @@ package com.example.pp01;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
@@ -29,10 +30,19 @@ public class ScannerActivity extends AppCompatActivity {
         resultText = findViewById(R.id.result_text);
         scannerLine = findViewById(R.id.scanner_line);
         Button scanButton = findViewById(R.id.scan_button);
+        ImageView backButton = findViewById(R.id.back_button);
 
         setupScanLineAnimation();
 
         scanButton.setOnClickListener(v -> scanQRCode());
+
+        backButton.setOnClickListener(v -> {
+            // Return to MainActivity
+            Intent intent = new Intent(ScannerActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         checkCameraPermission();
     }
@@ -91,8 +101,10 @@ public class ScannerActivity extends AppCompatActivity {
         if (text != null && !text.trim().isEmpty()) {
             String packageId = text.trim();
             if (packageId.matches("[a-fA-F0-9]{32}")) {
-                resultText.setText("ID: " + packageId);
-                Toast.makeText(this, "Успешно!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ScannerActivity.this, InfoPackActivity.class);
+                intent.putExtra("QR_CONTENT", "ID: " + packageId);
+                startActivity(intent);
+                finish();
             } else {
                 resultText.setText("Неверный формат ID");
                 Toast.makeText(this, "QR-код не содержит валидный ID", Toast.LENGTH_SHORT).show();

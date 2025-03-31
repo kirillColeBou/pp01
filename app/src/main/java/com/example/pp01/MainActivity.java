@@ -151,10 +151,7 @@ public class MainActivity extends AppCompatActivity {
         button.setBackgroundResource(categoryId == -1 ? R.drawable.background_category_selected : R.drawable.background_category);
         button.setTextColor(ContextCompat.getColor(this, categoryId == -1 ? R.color.white : R.color.black));
         button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         int marginRight = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 15,
@@ -170,6 +167,17 @@ public class MainActivity extends AppCompatActivity {
         button.setPadding(padding, padding/2, padding, padding/2);
         button.setLayoutParams(params);
         button.setOnClickListener(v -> {
+            for (int i = 0; i < categoriesContainer.getChildCount(); i++) {
+                View child = categoriesContainer.getChildAt(i);
+                if (child instanceof Button) {
+                    child.setBackgroundResource(R.drawable.background_category);
+                    ((Button) child).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.black));
+                }
+            }
+            v.setBackgroundResource(R.drawable.background_category_selected);
+            ((Button) v).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white));
+            selectedCategoryId = (int) v.getTag();
+            filterPacks();
         });
         categoriesContainer.addView(button);
     }
