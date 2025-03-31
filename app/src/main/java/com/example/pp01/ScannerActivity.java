@@ -88,12 +88,18 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void processResult(String text) {
-        if (text.startsWith("package_id:")) {
-            String packageId = text.substring("package_id:".length());
-            resultText.setText("ID: " + packageId);
-            Toast.makeText(this, "Успешно!", Toast.LENGTH_SHORT).show();
+        if (text != null && !text.trim().isEmpty()) {
+            String packageId = text.trim();
+            if (packageId.matches("[a-fA-F0-9]{32}")) {
+                resultText.setText("ID: " + packageId);
+                Toast.makeText(this, "Успешно!", Toast.LENGTH_SHORT).show();
+            } else {
+                resultText.setText("Неверный формат ID");
+                Toast.makeText(this, "QR-код не содержит валидный ID", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            resultText.setText("Неверный формат");
+            resultText.setText("Пустой QR-код");
+            Toast.makeText(this, "Не удалось распознать QR-код", Toast.LENGTH_SHORT).show();
         }
     }
 

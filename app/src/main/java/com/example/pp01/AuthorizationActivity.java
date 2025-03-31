@@ -1,48 +1,46 @@
 package com.example.pp01;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class AuthorizationActivity extends AppCompatActivity {
-    EditText etUsername;
-    EditText etPassword;
-    UserContext userContext = new UserContext();
+    private EditText etUsername;
+    private EditText etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.authorization_activity);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         etUsername = findViewById(R.id.username);
         etPassword = findViewById(R.id.password);
     }
 
-    public void onAuthorization(View view){
-        String username_str = etUsername.getText().toString();
-        String password_str = etPassword.getText().toString();
-        UserContext.checkUserCredentials(username_str, password_str, null, new UserContext.Callback() {
+    public void onAuthorization(View view) {
+        String username = etUsername.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String hashedPassword = md5(password);
+        UserContext.checkUserCredentials(username, hashedPassword, new UserContext.Callback() {
             @Override
             public void onSuccess(boolean userExists) {
                 runOnUiThread(() -> {
                     if (userExists) {
-                        setContentView(R.layout.main_activity);
+                        startActivity(new Intent(AuthorizationActivity.this, MainActivity.class));
+                        finish();
                     } else {
                         Toast.makeText(AuthorizationActivity.this,
-                                "Invalid credentials", Toast.LENGTH_SHORT).show();
+                                "Неверные учетные данные", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -50,10 +48,27 @@ public class AuthorizationActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 runOnUiThread(() ->
-                       Log.d("Error", error));
+                        Toast.makeText(AuthorizationActivity.this,
+                                "Ошибка соединения", Toast.LENGTH_SHORT).show());
             }
         });
     }
 
+    private String md5(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
 
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 algorithm not found", e);
+        }
+    }
 }
