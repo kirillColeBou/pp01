@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.journeyapps.barcodescanner.BarcodeView;
+import java.util.List;
 
 public class ScannerActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 1001;
@@ -37,7 +39,6 @@ public class ScannerActivity extends AppCompatActivity {
         scanButton.setOnClickListener(v -> scanQRCode());
 
         backButton.setOnClickListener(v -> {
-            // Return to MainActivity
             Intent intent = new Intent(ScannerActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
@@ -100,19 +101,43 @@ public class ScannerActivity extends AppCompatActivity {
     private void processResult(String text) {
         if (text != null && !text.trim().isEmpty()) {
             String packageId = text.trim();
-            if (packageId.matches("[a-fA-F0-9]{32}")) {
-                Intent intent = new Intent(ScannerActivity.this, InfoPackActivity.class);
-                intent.putExtra("QR_CONTENT", "ID: " + packageId);
-                startActivity(intent);
-                finish();
-            } else {
-                resultText.setText("Неверный формат ID");
-                Toast.makeText(this, "QR-код не содержит валидный ID", Toast.LENGTH_SHORT).show();
-            }
+            findPackInSupabase(packageId);
         } else {
             resultText.setText("Пустой QR-код");
             Toast.makeText(this, "Не удалось распознать QR-код", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void findPackInSupabase(String packId) {
+        PackContext.findPackById(packId, new PackContext.PacksCallback() {
+            @Override
+            public void onSuccess(List<Pack> packs) {
+                if (packs != null && !packs.isEmpty()) {
+                    Pack foundPack = packs.get(0);
+                    Intent intent = new Intent(ScannerActivity.this, InfoPackActivity.class);
+                    intent.putExtra("pack", foundPack);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    runOnUiThread(() -> {
+                        resultText.setText("Упаковка не найдена");
+                        Toast.makeText(ScannerActivity.this,
+                                "Упаковка с ID " + packId + " не найдена",
+                                Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    resultText.setText("Ошибка поиска");
+                    Toast.makeText(ScannerActivity.this,
+                            "Ошибка при поиске упаковки: " + error,
+                            Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     @Override

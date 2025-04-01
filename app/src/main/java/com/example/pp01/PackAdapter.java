@@ -1,8 +1,7 @@
 package com.example.pp01;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,40 +33,48 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.PackViewHolder
     @Override
     public void onBindViewHolder(@NonNull PackViewHolder holder, int position) {
         Pack pack = packList.get(position);
-        holder.productName.setText(pack.getName());
-        holder.productCategory.setText("Категория: " + pack.getCategoryName());
-        holder.productWarehouse.setText("Склад: " + pack.getWarehouseName());
+        holder.productName.setText(pack.getProductName() != null ? pack.getProductName() : "Нет названия");
+        holder.productPackName.setText(pack.getName() != null ? pack.getName() : "");
+        holder.productCategory.setText("Категория: " + (pack.getCategoryName() != null ? pack.getCategoryName() : "не указана"));
+        holder.productWarehouse.setText("Склад: " + (pack.getWarehouseName() != null ? pack.getWarehouseName() : "не указан"));
         holder.productQuantity.setText("Количество: " + pack.getQuantity());
-
-        if (pack.getQrCode() != null && !pack.getQrCode().isEmpty()) {
-            try {
-                String base64Image = pack.getQrCode().startsWith("data:image") ?
-                        pack.getQrCode().substring(pack.getQrCode().indexOf(",") + 1) : pack.getQrCode();
-                byte[] qrCodeBytes = Base64.decode(base64Image, Base64.DEFAULT);
-                Bitmap qrBitmap = BitmapFactory.decodeByteArray(qrCodeBytes, 0, qrCodeBytes.length);
-                holder.qrCodeImage.setImageBitmap(qrBitmap);
-                holder.qrCodeImage.setVisibility(View.VISIBLE);
-            } catch (Exception e) {
-                holder.qrCodeImage.setVisibility(View.GONE);
-            }
+        if (pack.getNumerationMin() != 0 || pack.getNumerationMax() != 0) {
+            holder.productNumeration.setText("Нумерация: " + pack.getNumerationMin() + " - " + pack.getNumerationMax());
+            holder.productNumeration.setVisibility(View.VISIBLE);
         } else {
-            holder.qrCodeImage.setVisibility(View.GONE);
+            holder.productNumeration.setVisibility(View.GONE);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, InfoPackActivity.class);
+                intent.putExtra("pack", pack);
+                context.startActivity(intent);
+            }
+        });
     }
 
-    @Override public int getItemCount() { return packList.size(); }
+    @Override
+    public int getItemCount() {
+        return packList.size();
+    }
 
     static class PackViewHolder extends RecyclerView.ViewHolder {
-        TextView productName, productCategory, productWarehouse, productQuantity;
+        TextView productName, productPackName, productCategory,
+                productWarehouse, productQuantity, productNumeration;
         ImageView qrCodeImage;
 
         PackViewHolder(@NonNull View itemView) {
             super(itemView);
             productName = itemView.findViewById(R.id.productName);
+            productPackName = itemView.findViewById(R.id.productPackName);
             productCategory = itemView.findViewById(R.id.productCategory);
             productWarehouse = itemView.findViewById(R.id.productWarehouse);
             productQuantity = itemView.findViewById(R.id.productQuantity);
+            productNumeration = itemView.findViewById(R.id.productNumeration);
             qrCodeImage = itemView.findViewById(R.id.qrCodeImage);
+            qrCodeImage.setImageResource(R.drawable.box);
         }
     }
 }
