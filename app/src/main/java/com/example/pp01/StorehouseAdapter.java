@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,18 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StorehouseAdapter extends RecyclerView.Adapter<StorehouseAdapter.StorehouseViewHolder> {
-    private List<Storehouse> storehouseList;
+    public List<Storehouse> storehouseList;
+    private OnItemClickListener listener;
 
-    public StorehouseAdapter(List<Storehouse> storehouseList) {
+    public interface OnItemClickListener {
+        void onEditClick(int position);
+        void onDeleteClick(int position);
+    }
+
+    public StorehouseAdapter(List<Storehouse> storehouseList, OnItemClickListener listener) {
         this.storehouseList = storehouseList;
+        this.listener = listener;
     }
 
-    public void updateList(List<Storehouse> newList) {
-        storehouseList = new ArrayList<>(newList);
-        notifyDataSetChanged();
-    }
-
-    @NonNull @Override
+    @NonNull
+    @Override
     public StorehouseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_storehouse, parent, false);
         return new StorehouseViewHolder(view);
@@ -35,8 +39,19 @@ public class StorehouseAdapter extends RecyclerView.Adapter<StorehouseAdapter.St
     @Override
     public void onBindViewHolder(@NonNull StorehouseViewHolder holder, int position) {
         Storehouse storehouse = storehouseList.get(position);
-        holder.storehouseName.setText(storehouse.getName() != null ? storehouse.getName() : "Нет названия");
-        holder.storehouseImage.setImageResource(R.drawable.storehouse);
+        holder.storehouseName.setText(storehouse.getName());
+
+        holder.editButton.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onEditClick(position);
+            }
+        });
+
+        holder.deleteButton.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteClick(position);
+            }
+        });
     }
 
     @Override
@@ -46,12 +61,13 @@ public class StorehouseAdapter extends RecyclerView.Adapter<StorehouseAdapter.St
 
     static class StorehouseViewHolder extends RecyclerView.ViewHolder {
         TextView storehouseName;
-        ImageView storehouseImage;
+        LinearLayout editButton, deleteButton;
 
         StorehouseViewHolder(@NonNull View itemView) {
             super(itemView);
             storehouseName = itemView.findViewById(R.id.storehouseName);
-            storehouseImage = itemView.findViewById(R.id.storehouseImage);
+            editButton = itemView.findViewById(R.id.editButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
