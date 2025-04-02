@@ -107,8 +107,14 @@ public class MainActivity extends AppCompatActivity {
         PopupMenu popup = new PopupMenu(this, view);
         popup.inflate(R.menu.popup_menu);
         popup.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.menu_scanner || item.getItemId() == R.id.menu_warehouse) {
+            if (item.getItemId() == R.id.menu_scanner) {
                 startActivity(new Intent(this, ScannerActivity.class));
+            } else if (item.getItemId() == R.id.menu_warehouse) {
+                startActivity(new Intent(this, StorehouseActivity.class));
+                finish();
+            } else if (item.getItemId() == R.id.menu_product) {
+                startActivity(new Intent(this, ProductActivity.class));
+                finish();
             } else if (item.getItemId() == R.id.menu_logout) {
                 startActivity(new Intent(this, AuthorizationActivity.class));
                 finish();

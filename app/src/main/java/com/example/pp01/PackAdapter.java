@@ -26,14 +26,13 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.PackViewHolder
 
     @NonNull @Override
     public PackViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pack, parent, false);
         return new PackViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PackViewHolder holder, int position) {
         Pack pack = packList.get(position);
-        holder.productName.setText(pack.getProductName() != null ? pack.getProductName() : "Нет названия");
         holder.productPackName.setText(pack.getName() != null ? pack.getName() : "");
         holder.productCategory.setText("Категория: " + (pack.getCategoryName() != null ? pack.getCategoryName() : "не указана"));
         holder.productWarehouse.setText("Склад: " + (pack.getWarehouseName() != null ? pack.getWarehouseName() : "не указан"));
@@ -61,13 +60,12 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.PackViewHolder
     }
 
     static class PackViewHolder extends RecyclerView.ViewHolder {
-        TextView productName, productPackName, productCategory,
+        TextView productPackName, productCategory,
                 productWarehouse, productQuantity, productNumeration;
         ImageView qrCodeImage;
 
         PackViewHolder(@NonNull View itemView) {
             super(itemView);
-            productName = itemView.findViewById(R.id.productName);
             productPackName = itemView.findViewById(R.id.productPackName);
             productCategory = itemView.findViewById(R.id.productCategory);
             productWarehouse = itemView.findViewById(R.id.productWarehouse);

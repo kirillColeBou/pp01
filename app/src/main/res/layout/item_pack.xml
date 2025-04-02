@@ -15,11 +15,11 @@
         android:padding="16dp">
 
         <ImageView
-            android:id="@+id/productImage"
+            android:id="@+id/qrCodeImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginEnd="16dp"
-            android:scaleType="centerCrop"/>
+            android:src="@drawable/box"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,32 +27,45 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/productName"
+                android:id="@+id/productPackName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/productNz"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/productCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/productWarehouse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/productAlias"
+                android:id="@+id/productQuantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"/>
 
             <TextView
-                android:id="@+id/productType"
+                android:id="@+id/productNumeration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"/>
 
         </LinearLayout>
 

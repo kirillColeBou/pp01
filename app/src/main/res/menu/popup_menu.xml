@@ -7,6 +7,9 @@
         android:id="@+id/menu_warehouse"
         android:title="Склады"/>
     <item
+        android:id="@+id/menu_product"
+        android:title="Товары"/>
+    <item
         android:id="@+id/menu_logout"
         android:title="Выход"/>
 </menu>
