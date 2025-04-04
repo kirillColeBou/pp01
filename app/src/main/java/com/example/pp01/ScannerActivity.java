@@ -22,6 +22,7 @@ public class ScannerActivity extends AppCompatActivity {
     private TextView resultText;
     private ImageView scannerLine;
     private ObjectAnimator scanLineAnimator;
+    private boolean isProcessingResult = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,7 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void setupAutoScanner() {
-        barcodeView.decodeContinuous(result -> {
+        barcodeView.decodeSingle(result -> {
             if (result.getText() != null) {
                 runOnUiThread(() -> processResult(result.getText()));
             }
@@ -99,7 +100,9 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void processResult(String text) {
+        if (isProcessingResult) return;
         if (text != null && !text.trim().isEmpty()) {
+            isProcessingResult = true;
             String packageId = text.trim();
             findPackInSupabase(packageId);
         } else {
@@ -155,6 +158,7 @@ public class ScannerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        isProcessingResult = false;
         if (barcodeView != null && hasCameraPermission()) {
             barcodeView.resume();
             if (scanLineAnimator != null) scanLineAnimator.start();
